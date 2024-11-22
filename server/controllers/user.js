@@ -68,38 +68,81 @@ export const Login = async (req, res) => {
 
 
 //logout
+// export const Logout = async (req, res) => {
+//   console.log("Logout attempt by user:", req.user);
+//   try {
+//     const user = req.user;
+//     const wishlist = req.body.wishlist; // Access wishlist from the request body
+
+//     console.log("Received wishlist:", wishlist);
+
+//     if (user) {
+//       if (wishlist) {
+//         user.wishlist = wishlist; // Update the user's wishlist
+//         await user.save(); // Save the updated user data
+//       }
+
+//       return res
+//         .status(200)
+//         .cookie("token", "", {
+//           httpOnly: true,
+//           expires: new Date(0),
+//           secure: false,
+//           sameSite: "Strict",
+//           path: "/",
+//         })
+//         .json({
+//           message: "User logged out successfully.",
+//           success: true,
+//         });
+//     }
+
+//     return res.status(404).json({
+//       message: "User not found.",
+//       success: false,
+//     });
+//   } catch (error) {
+//     console.error("Logout error:", error);
+//     return res.status(500).json({
+//       message: "Server error",
+//       success: false,
+//     });
+//   }
+// };
 export const Logout = async (req, res) => {
-  console.log("Logout attempt by user:", req.user);
   try {
-    const user = req.user;
-    const wishlist = req.body.wishlist; // Access wishlist from the request body
+    console.log("Logout attempt by user:", req.user);
 
-    console.log("Received wishlist:", wishlist);
+    // Clear the cookie unconditionally
+    res.cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(0),
+      secure: false,
+      sameSite: "Strict",
+      path: "/",
+    });
 
-    if (user) {
+    if (req.user) {
+      const user = req.user;
+      const wishlist = req.body.wishlist;
+
+      console.log("Received wishlist:", wishlist);
+
       if (wishlist) {
-        user.wishlist = wishlist; // Update the user's wishlist
-        await user.save(); // Save the updated user data
+        user.wishlist = wishlist; // Update user's wishlist
+        await user.save(); // Save the user data
       }
 
-      return res
-        .status(200)
-        .cookie("token", "", {
-          httpOnly: true,
-          expires: new Date(0),
-          secure: false,
-          sameSite: "Strict",
-          path: "/",
-        })
-        .json({
-          message: "User logged out successfully.",
-          success: true,
-        });
+      return res.status(200).json({
+        message: "User logged out successfully.",
+        success: true,
+      });
     }
 
-    return res.status(404).json({
-      message: "User not found.",
-      success: false,
+    // If no user found, still return a success response
+    return res.status(200).json({
+      message: "No active user session to logout.",
+      success: true,
     });
   } catch (error) {
     console.error("Logout error:", error);
@@ -109,6 +152,7 @@ export const Logout = async (req, res) => {
     });
   }
 };
+
 
 
 
