@@ -8,13 +8,13 @@ export function Component() {
   return (
     <Footer container>
       <div className="w-full p-4 pt-10 bg-slate-900 text-slate-100">
-        <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
+        <div className="grid max-w-6xl mx-auto justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
           <NavLink to="/">
             <div className="ml-5">
-              <img src="../logo.png" className="h-10 sm:h-14 " alt="Logo" />
+              <img src="../logo.png" className="h-10 sm:h-14 pb-2" alt="Logo" />
             </div>
           </NavLink>
-          <div className="grid grid-cols-2 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6 pb-10">
+          <div className="grid grid-cols-1 gap-8 sm:mt-4 sm:grid-cols-3 sm:gap-6 pb-10">
             <div>
               <Footer.Title title="Contact" className="text-slate-400" />
               <Footer.LinkGroup col>
@@ -39,7 +39,7 @@ export function Component() {
           </div>
         </div>
         <Footer.Divider />
-        <div className="w-full sm:flex sm:items-center sm:justify-between p-8">
+        <div className="max-w-6xl mx-auto sm:flex sm:items-center sm:justify-between p-8">
           <Footer.Copyright href="#" by=" Mudit Dwivedi" year={2024}  className="text-slate-100" />
           <div className="mt-4 flex space-x-6 sm:mt-0 sm:justify-center">
             <Footer.Icon href="#" icon={BsFacebook} className="text-slate-100" />

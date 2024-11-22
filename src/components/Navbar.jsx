@@ -1,157 +1,21 @@
-// import { useSelector, useDispatch } from "react-redux";
-// import { NavLink, useNavigate, useLocation } from "react-router-dom";
-// import { useEffect, useState } from "react";
-// import { FaShoppingCart } from "react-icons/fa";
-// import { clearCart } from "../redux/Slices/CartSlice"; // Ensure the path is correct
-// import { useWishlist } from "../context/WishlistContext"; // Import wishlist context
-// import axios from "axios";
-
-// const Navbar = () => {
-//   const { cart } = useSelector((state) => state.cart) || {}; // Ensure cart is safely fetched
-//   const { wishlist } = useWishlist() || {}; // Ensure wishlist is safely fetched
-//   const dispatch = useDispatch();
-//   const [isLoggedIn, setIsLoggedIn] = useState(false);
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const { clearUser, setUser } = useWishlist();
-
-//   const checkLoginStatus = () => {
-//     const authToken = localStorage.getItem("authToken");
-//     const loginCookie = document.cookie.includes("authCookie");
-//     const loggedIn = !!authToken || loginCookie;
-
-//     if (loggedIn) {
-//       const storedUserId = localStorage.getItem("userId");
-//       if (storedUserId) {
-//         setUser(storedUserId); // Load wishlist for the user
-//       }
-//     }
-//     setIsLoggedIn(loggedIn);
-//   };
-
-//   useEffect(() => {
-//     checkLoginStatus();
-
-//     // Listen for storage changes from other tabs
-//     window.addEventListener("storage", checkLoginStatus);
-
-//     return () => {
-//       window.removeEventListener("storage", checkLoginStatus);
-//     };
-//   }, [location]);
-
-// //   const handleLogout = () => {
-// //     localStorage.removeItem("authToken");
-// //     document.cookie = "authCookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-// //     clearUser();
-// //     dispatch(clearCart());
-// //     setIsLoggedIn(false);
-// //     navigate("/login");
-// //   };
-// // // In your frontend, change the POST request to GET
-// // // In your frontend, keep the POST request as is
-// const handleLogout = async () => {
-//   try {
-//     // Get the token from localStorage
-//     const token = localStorage.getItem("authToken");
-
-//     // Get the wishlist from localStorage
-//     const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-
-//     // Send logout request with wishlist in the request body
-//     await axios.post(
-//       "http://localhost:4000/user/logout",
-//       { wishlist }, // Include wishlist in the body
-//       {
-//         headers: { Authorization: `Bearer ${token}` }, // Send token in the header
-//         withCredentials: true, // Ensures cookies are sent and cleared
-//       }
-//     );
-
-//     // Clear local storage and cookies after logout
-//     localStorage.removeItem("wishlist");
-//     localStorage.removeItem("authToken");
-//     document.cookie =
-//       "authCookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-//     // Reset the logged-in state
-//     setIsLoggedIn(false);
-
-//     // Redirect to login page
-//     navigate("/login");
-//   } catch (error) {
-//     console.error("Logout failed:", error);
-//   }
-// };
-
-
-//   return (
-//     <nav className="flex justify-between items-center h-20 max-w-6xl mx-auto px-4 bg-slate-900 text-slate-100">
-//       <NavLink to="/" className="flex items-center">
-//         <img src="../logo.png" className="h-14" alt="Logo" />
-//       </NavLink>
-
-//       <div className="flex items-center font-medium space-x-6">
-//         <NavLink to="/">Home</NavLink>
-//         <NavLink to="/wishlist">Wishlist</NavLink>
-//         <NavLink to="/cart">
-//           <div className="relative">
-//             <FaShoppingCart className="text-2xl" />
-//             {/* Ensure cart is an array and check length */}
-//             {cart && cart.length > 0 && (
-//               <span
-//                 className="absolute -top-1 -right-2 bg-green-600 text-xs w-5 h-5 flex 
-//                 justify-center items-center animate-bounce rounded-full text-white"
-//               >
-//                 {cart.length}
-//               </span>
-//             )}
-//           </div>
-//         </NavLink>
-
-//         {/* Wishlist Badge */}
-//         {wishlist && wishlist.length > 0 && (
-//           <NavLink to="/wishlist">
-//             <div className="relative">
-//               <span
-//                 className="absolute -top-1 -right-2 bg-red-600 text-xs w-5 h-5 flex 
-//                 justify-center items-center animate-bounce rounded-full text-white"
-//               >
-//                 {wishlist.length}
-//               </span>
-//             </div>
-//           </NavLink>
-//         )}
-
-//         {isLoggedIn ? (
-//           <button onClick={handleLogout} className="text-red-500">
-//             Logout
-//           </button>
-//         ) : (
-//           <NavLink to="/signup">Signup</NavLink>
-//         )}
-//       </div>
-//     </nav>
-//   );
-// };
-//  export default Navbar;
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
-import { clearCart } from "../redux/Slices/CartSlice"; // Ensure the path is correct
-import { useWishlist } from "../context/WishlistContext"; // Import wishlist context
+import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai"; // For Hamburger Menu
+import { clearCart } from "../redux/Slices/CartSlice";
+import { useWishlist } from "../context/WishlistContext";
 import axios from "axios";
 
 const Navbar = () => {
-  const { cart } = useSelector((state) => state.cart) || {}; // Ensure cart is safely fetched
-  const { wishlist, setUser, clearUser } = useWishlist() || {}; // Ensure wishlist is safely fetched
+  const { cart } = useSelector((state) => state.cart) || {};
+  const { wishlist, setUser, clearUser } = useWishlist() || {};
   const dispatch = useDispatch();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false); // State for mobile menu
 
-  // Check if the user is logged in by checking localStorage or cookies
   const checkLoginStatus = () => {
     const authToken = localStorage.getItem("authToken");
     const loginCookie = document.cookie.includes("authCookie");
@@ -160,17 +24,14 @@ const Navbar = () => {
     if (loggedIn) {
       const storedUserId = localStorage.getItem("userId");
       if (storedUserId) {
-        setUser(storedUserId); // Load wishlist for the user
+        setUser(storedUserId);
       }
     }
     setIsLoggedIn(loggedIn);
   };
 
-  // Effect to check login status on initial load and on location change (e.g., route change)
   useEffect(() => {
     checkLoginStatus();
-
-    // Listen for storage changes (in case of login/logout in another tab)
     window.addEventListener("storage", checkLoginStatus);
 
     return () => {
@@ -178,141 +39,113 @@ const Navbar = () => {
     };
   }, [location]);
 
-  // Handle login
-  const handleLogin = async (loginData) => {
+  const handleLogout = async () => {
     try {
-      // Send the login request to the server (assuming POST request for login)
-      const response = await axios.post("http://localhost:4000/user/login", loginData);
-
-      // On successful login, store the auth token and user ID in localStorage
-      const { authToken, userId } = response.data;
-      localStorage.setItem("authToken", authToken);
-      localStorage.setItem("userId", userId);
-
-      // Set the state for logged-in status and load the user data
-      setIsLoggedIn(true);
-      setUser(userId); // Set the user ID to load the wishlist
-
-      // Redirect to the home page or dashboard
-      navigate("/");
-
+      const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || [];
+      await axios.post(
+        "http://localhost:4000/user/logout",
+        { wishlist: wishlistData },
+        { withCredentials: true }
+      );
     } catch (error) {
-      console.error("Login failed:", error);
+      console.error("Logout failed:", error);
+    } finally {
+      localStorage.removeItem("wishlist");
+      localStorage.removeItem("authToken");
+      document.cookie =
+        "authCookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      setIsLoggedIn(false);
+      clearUser();
+      dispatch(clearCart());
+      navigate("/login");
     }
   };
 
-  // Handle logout
-  // const handleLogout = async () => {
-  //   try {
-  //     const token = localStorage.getItem("authToken");
-  //     const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || [];
-
-  //     // Send logout request with wishlist in the request body
-  //     await axios.post(
-  //       "http://localhost:4000/user/logout",
-  //       { wishlist: wishlistData },
-  //       {
-  //         headers: { Authorization: `Bearer ${token}` }, // Send token in the header
-  //         withCredentials: true, // Ensures cookies are sent and cleared
-  //       }
-  //     );
-
-  //     // Clear local storage and cookies after logout
-  //     localStorage.removeItem("wishlist");
-  //     localStorage.removeItem("authToken");
-  //     document.cookie =
-  //       "authCookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-  //     // Reset the logged-in state
-  //     setIsLoggedIn(false);
-  //     clearUser(); // Clear the user wishlist data from context
-  //     dispatch(clearCart()); // Clear the cart
-
-  //     // Redirect to login page
-  //     navigate("/login");
-  //   } catch (error) {
-  //     console.error("Logout failed:", error);
-  //   }
-  // };
-  const handleLogout = async () => {
-  try {
-    const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || [];
-
-    // Send logout request with wishlist in the request body
-    await axios.post(
-      "http://localhost:4000/user/logout",
-      { wishlist: wishlistData },
-      {
-        withCredentials: true, // Ensures cookies are sent and cleared
-      }
-    );
-  } catch (error) {
-    console.error("Logout failed:", error); // Log error but proceed with clearing
-  } finally {
-    // Always clear local storage and cookies after logout
-    localStorage.removeItem("wishlist");
-    localStorage.removeItem("authToken");
-    document.cookie =
-      "authCookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-    // Reset the logged-in state
-    setIsLoggedIn(false);
-    clearUser(); // Clear the user wishlist data from context
-    dispatch(clearCart()); // Clear the cart
-
-    // Redirect to login page
-    navigate("/login");
-  }
-};
-
-
   return (
-    <nav className="flex justify-between items-center h-20 max-w-6xl mx-auto px-4 bg-slate-900 text-slate-100">
-      <NavLink to="/" className="flex items-center">
-        <img src="../logo.png" className="h-14" alt="Logo" />
+    <nav className="bg-slate-900 text-slate-100">
+  <div className="max-w-6xl mx-auto px-4 flex justify-between items-center h-20">
+    {/* Logo */}
+    <NavLink to="/" className="flex items-center">
+    <img src="../logo.png" className="h-10 sm:h-14 " alt="Logo" />
+    </NavLink>
+
+    {/* Desktop Menu */}
+    <div className="hidden sm:flex items-center space-x-6">
+      <NavLink to="/">Home</NavLink>
+      <NavLink to="/wishlist">Wishlist</NavLink>
+      <NavLink to="/cart">
+        <div className="relative">
+          <FaShoppingCart className="text-2xl" />
+          {cart && cart.length > 0 && (
+            <span className="absolute -top-1 -right-2 bg-green-600 text-xs w-5 h-5 flex justify-center items-center animate-bounce rounded-full text-white">
+              {cart.length}
+            </span>
+          )}
+        </div>
       </NavLink>
+      {isLoggedIn ? (
+        <button onClick={handleLogout} className="text-red-500">
+          Logout
+        </button>
+      ) : (
+        <NavLink to="/signup">Signup</NavLink>
+      )}
+    </div>
 
-      <div className="flex items-center font-medium space-x-6">
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/wishlist">Wishlist</NavLink>
-        <NavLink to="/cart">
-          <div className="relative">
-            <FaShoppingCart className="text-2xl" />
-            {/* Ensure cart is an array and check length */}
-            {cart && cart.length > 0 && (
-              <span
-                className="absolute -top-1 -right-2 bg-green-600 text-xs w-5 h-5 flex 
-                justify-center items-center animate-bounce rounded-full text-white"
-              >
-                {cart.length}
-              </span>
-            )}
-          </div>
-        </NavLink>
+    {/* Mobile Hamburger Menu */}
+    <div className="sm:hidden flex items-center">
+      <button
+        onClick={() => setMenuOpen(!menuOpen)}
+        className="text-2xl focus:outline-none"
+      >
+        {menuOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
+      </button>
+    </div>
+  </div>
 
-        {/* Wishlist Badge */}
-        {wishlist && wishlist.length > 0 && (
-          <NavLink to="/wishlist">
-            <div className="relative">
-              <span
-                className="absolute -top-1 -right-2 bg-red-600 text-xs w-5 h-5 flex 
-                justify-center items-center animate-bounce rounded-full text-white"
-              >
-                {wishlist.length}
-              </span>
-            </div>
-          </NavLink>
-        )}
+  {/* Mobile Menu */}
+  {menuOpen && (
+  <div className="sm:hidden bg-slate-800 text-slate-100 flex flex-col items-start space-y-4 py-4 px-4">
+    {/* Home Link */}
+    <NavLink to="/" onClick={() => setMenuOpen(false)} className="w-full">
+      Home
+    </NavLink>
 
-        {isLoggedIn ? (
-          <button onClick={handleLogout} className="text-red-500">
-            Logout
-          </button>
-        ) : (
-          <NavLink to="/signup">Signup</NavLink>
+    {/* Wishlist Link */}
+    <NavLink to="/wishlist" onClick={() => setMenuOpen(false)} className="w-full">
+      Wishlist
+    </NavLink>
+
+    {/* Cart Link */}
+    <NavLink to="/cart" onClick={() => setMenuOpen(false)} className="w-full">
+      <div className="relative flex items-center">
+        <FaShoppingCart className="text-2xl" />
+        {cart && cart.length > 0 && (
+          <span className="absolute -top-1 -right-2 bg-green-600 text-xs w-5 h-5 flex justify-center items-center animate-bounce rounded-full text-white">
+            {cart.length}
+          </span>
         )}
       </div>
-    </nav>
+    </NavLink>
+
+    {/* Logout/Signup */}
+    {isLoggedIn ? (
+      <button
+        onClick={handleLogout}
+        className="text-red-500 w-full text-left"
+      >
+        Logout
+      </button>
+    ) : (
+      <NavLink to="/signup" onClick={() => setMenuOpen(false)} className="w-full">
+        Signup
+      </NavLink>
+    )}
+  </div>
+)}
+
+</nav>
+
   );
 };
 
