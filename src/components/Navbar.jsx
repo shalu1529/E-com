@@ -202,38 +202,69 @@ const Navbar = () => {
   };
 
   // Handle logout
+  // const handleLogout = async () => {
+  //   try {
+  //     const token = localStorage.getItem("authToken");
+  //     const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || [];
+
+  //     // Send logout request with wishlist in the request body
+  //     await axios.post(
+  //       "http://localhost:4000/user/logout",
+  //       { wishlist: wishlistData },
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` }, // Send token in the header
+  //         withCredentials: true, // Ensures cookies are sent and cleared
+  //       }
+  //     );
+
+  //     // Clear local storage and cookies after logout
+  //     localStorage.removeItem("wishlist");
+  //     localStorage.removeItem("authToken");
+  //     document.cookie =
+  //       "authCookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+
+  //     // Reset the logged-in state
+  //     setIsLoggedIn(false);
+  //     clearUser(); // Clear the user wishlist data from context
+  //     dispatch(clearCart()); // Clear the cart
+
+  //     // Redirect to login page
+  //     navigate("/login");
+  //   } catch (error) {
+  //     console.error("Logout failed:", error);
+  //   }
+  // };
   const handleLogout = async () => {
-    try {
-      const token = localStorage.getItem("authToken");
-      const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || [];
+  try {
+    const wishlistData = JSON.parse(localStorage.getItem("wishlist")) || [];
 
-      // Send logout request with wishlist in the request body
-      await axios.post(
-        "http://localhost:4000/user/logout",
-        { wishlist: wishlistData },
-        {
-          headers: { Authorization: `Bearer ${token}` }, // Send token in the header
-          withCredentials: true, // Ensures cookies are sent and cleared
-        }
-      );
+    // Send logout request with wishlist in the request body
+    await axios.post(
+      "http://localhost:4000/user/logout",
+      { wishlist: wishlistData },
+      {
+        withCredentials: true, // Ensures cookies are sent and cleared
+      }
+    );
+  } catch (error) {
+    console.error("Logout failed:", error); // Log error but proceed with clearing
+  } finally {
+    // Always clear local storage and cookies after logout
+    localStorage.removeItem("wishlist");
+    localStorage.removeItem("authToken");
+    document.cookie =
+      "authCookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-      // Clear local storage and cookies after logout
-      localStorage.removeItem("wishlist");
-      localStorage.removeItem("authToken");
-      document.cookie =
-        "authCookie=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    // Reset the logged-in state
+    setIsLoggedIn(false);
+    clearUser(); // Clear the user wishlist data from context
+    dispatch(clearCart()); // Clear the cart
 
-      // Reset the logged-in state
-      setIsLoggedIn(false);
-      clearUser(); // Clear the user wishlist data from context
-      dispatch(clearCart()); // Clear the cart
+    // Redirect to login page
+    navigate("/login");
+  }
+};
 
-      // Redirect to login page
-      navigate("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
 
   return (
     <nav className="flex justify-between items-center h-20 max-w-6xl mx-auto px-4 bg-slate-900 text-slate-100">
